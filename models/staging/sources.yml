@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    database: OC_DATA
+    schema: RAW
+    tables:
+      - name: students_raw
+
+      columns:
+  - name: user_id
+    tests:
+      - not_null
+      - unique
