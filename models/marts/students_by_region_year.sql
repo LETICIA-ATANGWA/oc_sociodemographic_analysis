@@ -2,8 +2,8 @@
 
 select
     region,
-    year_path_started,
+    year_path_started as year,
     gender,
-    count(*) as total_students
+    count(distinct user_id) as total_students
 from {{ ref('stg_students') }}
-group by 1,2,3
+group by region, year_path_started, gender

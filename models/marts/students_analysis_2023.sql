@@ -1,6 +1,5 @@
 with students as (
 
-    -- Comptage des étudiants par région et année
     select
         region,
         year_path_started as annee,
@@ -10,11 +9,23 @@ with students as (
 
 ),
 
-region_data as (
+population_data as (
 
-    -- Données socio-économiques (uniquement 2023)
-    select *
-    from {{ ref('region_socioeco_2023') }}
+    select
+        region,
+        annee,
+        population
+    from {{ ref('stg_population_2023') }}
+
+),
+
+revenue_data as (
+
+    select
+        region,
+        annee,
+        REVENUE_BRUT_DISPO
+    from {{ ref('stg_revenue_2023') }}
 
 )
 
@@ -22,17 +33,19 @@ select
     s.region,
     s.annee,
     s.nb_students,
-
-    r.population,
-    r.revenu_par_habitant,
+    p.population,
+    r.REVENUE_BRUT_DISPO,
 
     case
-        when r.population is not null
-        then (s.nb_students / r.population) * 100000
+        when p.population is not null
+        then (s.nb_students / p.population) * 100000
         else null
     end as students_per_100k
 
 from students s
-left join region_data r
-    on lower(trim(s.region)) = lower(trim(r.region))
+left join population_data p
+    on s.region = p.region
+    and s.annee = p.annee
+left join revenue_data r
+    on s.region = r.region
     and s.annee = r.annee

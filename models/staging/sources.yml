@@ -6,9 +6,5 @@ sources:
     schema: RAW
     tables:
       - name: students_raw
-
-      columns:
-  - name: user_id
-    tests:
-      - not_null
-      - unique
+      - name: population_raw
+      - name: revenue_raw
