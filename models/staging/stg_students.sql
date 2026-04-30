@@ -1,8 +1,21 @@
-select
-    USER_ID as user_id,
-    PATH_CATEGORY_NAME as path_category_name,
-    AGE_GROUP as age_group,
-    coalesce(GENDER, 'Unknown') as gender,
-    REGION as region,
-    YEAR_PATH_STARTED as year_path_started
-from {{ source('raw', 'students_raw') }}
+with source as (
+    select * from {{ source('raw', 'STUDENTS_RAW') }}
+),
+
+cleaned as (
+    select
+        USER_ID,
+        PATH_CATEGORY_NAME,
+        AGE_GROUP,
+        GENDER,
+        REGION,
+        YEAR_PATH_STARTED as YEAR
+
+    from source
+    where
+        USER_ID is not null
+        and REGION is not null
+        and YEAR_PATH_STARTED is not null
+)
+
+select * from cleaned

@@ -2,9 +2,20 @@ version: 2
 
 sources:
   - name: raw
-    database: OC_DATA
     schema: RAW
     tables:
       - name: students_raw
-      - name: population_raw
-      - name: revenue_raw
+        description: "Données brutes des étudiants OpenClassrooms"
+        columns:
+          - name: USER_ID
+            description: "Identifiant unique de l'étudiant"
+          - name: PATH_CATEGORY_NAME
+            description: "Catégorie du parcours"
+          - name: AGE_GROUP
+            description: "Tranche d'âge de l'étudiant"
+          - name: GENDER
+            description: "Genre de l'étudiant"
+          - name: REGION
+            description: "Région de l'étudiant"
+          - name: YEAR_PATH_STARTED
+            description: "Année de début du parcours"

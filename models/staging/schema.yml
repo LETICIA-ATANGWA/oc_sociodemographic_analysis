@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_students
+    description: "Modèle staging des étudiants"
+    columns:
+      - name: USER_ID
+        description: "Identifiant unique de l'étudiant"
+        tests:
+          - not_null
+      - name: REGION
+        description: "Région de l'étudiant"
+        tests:
+          - not_null
+      - name: YEAR
+        description: "Année de début du parcours"
+        tests:
+          - not_null
