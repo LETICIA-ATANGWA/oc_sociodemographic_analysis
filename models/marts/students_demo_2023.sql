@@ -1,55 +1,19 @@
-with students as (
-
-    -- Comptage des étudiants par région, année et âge
-    select
-        region,
-        year_path_started as annee,
-        age_group,
-        count(distinct user_id) as nb_students
-    from {{ ref('stg_students') }}
-    group by region, year_path_started, age_group
-
-),
-
-population_data as (
-
-    select
-        region,
-        annee,
-        population
-    from {{ ref('stg_population_2023') }}
-
-),
-
-revenue_data as (
-
-    select
-        region,
-        annee,
-        REVENUE_BRUT_DISPO
-    from {{ ref('stg_revenue_2023') }}
-
-)
-
-select
-    s.region,
-    s.annee,
-    s.age_group,
-    s.nb_students,
-
-    p.population,
-    r.REVENUE_BRUT_DISPO,
-
-    case
-        when p.population is not null
-        then (s.nb_students / p.population) * 100000
-        else null
-    end as students_per_100k
-
-from students s
-left join population_data p
-    on s.region = p.region
-    and s.annee = p.annee
-left join revenue_data r
-    on s.region = r.region
-    and s.annee = r.annee
+-- models/marts/students_demo_2023.sql
+SELECT 
+    s.REGION,
+    s.YEAR_PATH_STARTED AS ANNEE,
+    s.AGE_GROUP,
+    s.GENDER,
+    COUNT(s.USER_ID) AS NB_STUDENTS,
+    MAX(p.POPULATION) AS POPULATION,
+    MAX(r.REVENU_DISPONIBLE_BRUT) AS REVENUE_BRUT_DISPO,
+    ROUND(
+        (COUNT(s.USER_ID) / NULLIF(MAX(p.POPULATION), 0)) * 100000,
+    2) AS STUDENTS_PER_100K
+FROM {{ ref('stg_students') }} s
+LEFT JOIN {{ ref('population_region_2023') }} p 
+    ON UPPER(TRIM(s.REGION)) = UPPER(TRIM(p.REGION))
+LEFT JOIN {{ ref('revenu_region_2023') }} r 
+    ON UPPER(TRIM(s.REGION)) = UPPER(TRIM(r.REGION))
+GROUP BY s.REGION, s.YEAR_PATH_STARTED, s.AGE_GROUP, s.GENDER
+ORDER BY s.REGION, s.YEAR_PATH_STARTED, s.AGE_GROUP
